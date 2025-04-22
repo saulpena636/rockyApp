@@ -3,12 +3,12 @@ import './App.css'
 import '@fontsource/inter';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, data } from 'react-router-dom';
 import Cronograma from './components/cronograma/cronograma';
 
 
-function App() {
 
+function App() {
   return (
     <>
       <BrowserRouter>

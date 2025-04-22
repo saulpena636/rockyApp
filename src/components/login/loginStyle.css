@@ -23,6 +23,7 @@
     align-items: center;
     justify-content: center;
     flex-wrap: nowrap;
+    gap: 32px;
 }
 
 .loginTitulo{
