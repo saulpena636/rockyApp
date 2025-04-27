@@ -1,5 +1,15 @@
 const BASE_URL = "http://localhost:8000/movimientoFinanciero";
 
+export const obtenerTodos = async () => {
+    try {
+      const respuesta = await fetch(BASE_URL);
+      return await respuesta.json();
+    } catch (error) {
+      console.error("Error al cargar los movimientos:", error);
+      throw error;
+    }
+  };
+
 export const agregar = async (datos) => {
   try {
     const resp = await fetch(BASE_URL, {

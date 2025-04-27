@@ -13,8 +13,21 @@
     height: 4rem;
     background: #2C3E50;
 }
-.agregar{
+
+.opciones_gen{
+  width: auto;
+  height: auto;
   margin-left: auto;
+}
+
+.agregar{
+  cursor: pointer;
+
+}
+
+.generar{
+  cursor: ponter;
+
 }
 
 .contenedorTabla {

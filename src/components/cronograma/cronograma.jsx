@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "./cronograma.css"
 import { useEffect, useState } from 'react';
-import { agregar, mostrarUno, actualizarUno, eliminarUno } from "../../services/cronograma";
+import { agregar, mostrarUno, actualizarUno, eliminarUno, obtenerTodos } from "../../services/cronograma";
 
 function FinanzasTable() {
   const [datos, setDatos] = useState([]);
@@ -20,17 +20,18 @@ function FinanzasTable() {
   const [monto_real, setMonto_real] = useState(0);
 
   useEffect(() => {
-    fetch("http://localhost:8000/movimientoFinanciero")
-      .then(res => res.json())
-      .then(data => {
+    const cargarDatos = async () => {
+      try {
+        const data = await obtenerTodos();
         setDatos(data);
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error("Error al cargar los datos: ", err)
-        setLoading(false)
-      })
-  }, [])
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    };
+
+    cargarDatos();
+  }, []);
 
   console.log(datos);
 
@@ -89,7 +90,10 @@ function FinanzasTable() {
       <div style={{ width: "100%", height: "80px" }}></div>
       <div className="contenedorTabla">
         <h1>Tu cronograma de ingresos y egresos</h1>
-        <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar" />
+        <div className="opciones_gen">
+          <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar" />
+          <img src="/generar_informe.png" alt="add" onClick={() => {}} className="generar" />
+        </div>
         <table border="1">
           <thead>
             <tr>
