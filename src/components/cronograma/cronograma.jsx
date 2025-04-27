@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "./cronograma.css"
 import { useEffect, useState } from 'react';
+import { agregar, mostrarUno, actualizarUno, eliminarUno } from "../../services/cronograma";
 
 function FinanzasTable() {
   const [datos, setDatos] = useState([]);
@@ -44,92 +45,41 @@ function FinanzasTable() {
   /* Agregar nuevo */
   const agregarN = async (params) => {
     params.preventDefault();
-    const datos = {
-      usuario_id,
-      fecha,
-      tipo,
-      concepto,
-      monto_presupuestado,
-      monto_real
-    }
-    try {
-      const resp = await fetch("http://localhost:8000/movimientoFinanciero", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(datos)
-      });
-      const respuesta = await resp.json();
-      console.log(respuesta)
-      window.location.reload();
-    } catch (error) {
-      console.error("Error al obtener el movimiento:", error);
-    }
+    const datos = { usuario_id, fecha, tipo, concepto, monto_presupuestado, monto_real };
+    const respuesta = await agregar(datos);
+    console.log(respuesta);
+    window.location.reload();
 
   }
 
   /* Mostrar Uno */
   const mostrarUNo = async (id) => {
-    try {
-      const respuesta = await fetch(`http://localhost:8000/movimientoFinanciero/${id}`);
-      const datos = await respuesta.json();
-      console.log(datos)
-      const { usuario_id, fecha, tipo, concepto, monto_presupuestado, monto_real } = datos
-      setId(id)
-      setFecha(fecha)
-      setTipo(tipo)
-      setConcepto(concepto)
-      setMonto_presupuestado(monto_presupuestado)
-      setMonto_real(monto_real)
-      setMostrarModalA(true)
-    } catch (error) {
-      console.error("Error al obtener el movimiento:", error);
-    }
+    const datos = await mostrarUno(id);
+    const { usuario_id, fecha, tipo, concepto, monto_presupuestado, monto_real } = datos;
+    setId(id);
+    setFecha(fecha);
+    setTipo(tipo);
+    setConcepto(concepto);
+    setMonto_presupuestado(monto_presupuestado);
+    setMonto_real(monto_real);
+    setMostrarModalA(true);
   }
 
   /* Actualizar */
   const actualizar = async (params) => {
     params.preventDefault();
-    const datos = {
-      usuario_id,
-      fecha,
-      tipo,
-      concepto,
-      monto_presupuestado,
-      monto_real
-    }
-    try {
-      const resp = await fetch(`http://localhost:8000/movimientoFinanciero/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(datos)
-      });
-      const respuesta = await resp.json();
-      console.log(respuesta)
-      window.location.reload();
-    } catch (error) {
-      console.error("Error al obtener el movimiento:", error);
-    }
+    const datos = { usuario_id, fecha, tipo, concepto, monto_presupuestado, monto_real };
+    const respuesta = await actualizarUno(id, datos);
+    console.log(respuesta);
+    window.location.reload();
 
   }
 
   /* Eliminar */
   const eliminar = async (id) => {
-    try {
-      const respuesta = await fetch(`http://localhost:8000/movimientoFinanciero/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      if (respuesta.ok) {
-        window.location.reload();
-      }
-    } catch (error) {
-
+    const ok = await eliminarUno(id);
+    if (ok) {
+      window.location.reload();
     }
   }
 
@@ -139,67 +89,7 @@ function FinanzasTable() {
       <div style={{ width: "100%", height: "80px" }}></div>
       <div className="contenedorTabla">
         <h1>Tu cronograma de ingresos y egresos</h1>
-        <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar"/>
-        {/*<table border={1}>
-          <thead>
-            <tr>
-              <th>Dia</th>
-              <th colSpan={3}>Ingresos</th>
-              <th colSpan={3}>Egresos</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            
-            <tr>
-              <td rowSpan={6}>07</td>
-              <td>Presupuestado</td>
-              <td rowSpan={2}>Prestamo de dinero</td>
-              <td>$150</td>
-              <td>Presupuestado</td>
-              <td rowSpan={2}>Pago de credito</td>
-              <td>$750</td>
-              <td>Editar</td>
-            </tr>
-            <tr>
-              <td>Real</td>
-              <td>$150</td>
-              <td>Real</td>
-              <td>$750</td>
-              <td>Eliminar</td>
-            </tr>
-            <tr>
-              <td>Presupuestado</td>
-              <td rowSpan={2}>Prestamo de dinero</td>
-              <td>$150</td>
-              <td>Presupuestado</td>
-              <td rowSpan={2}>Pago de credito</td>
-              <td>$750</td>
-              <td>Editar</td>
-            </tr>
-            <tr>
-              <td>Real</td>
-              <td>$150</td>
-              <td>Real</td>
-              <td>$750</td>
-              <td>Eliminar</td>
-            </tr>
-            <tr>
-              <td rowSpan={2}>Total Ingresos</td>
-              <td>Presupuestado</td>
-              <td>950</td>
-              <td rowSpan={2}>Total egresos</td>
-              <td>Presupuestado</td>
-              <td>950</td>
-            </tr>
-            <tr>
-              <td>Real</td>
-              <td>$950</td>
-              <td>Real</td>
-              <td>950</td>
-            </tr> 
-          </tbody>
-        </table>*/}
+        <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar" />
         <table border="1">
           <thead>
             <tr>
@@ -223,8 +113,8 @@ function FinanzasTable() {
                       <td>{item.monto_presupuestado}</td>
                       <td>{item.monto_real}</td>
                       <td>
-                        <img src="/edit.png" alt="edit" onClick={() => mostrarUNo(item.id)}  style={{ width: "32px", height: "32px" }}/>
-                        <img src="/trash.png" alt="trash" onClick={() => eliminar(item.id)}  style={{ width: "32px", height: "32px" }}/>
+                        <img src="/edit.png" alt="edit" onClick={() => mostrarUNo(item.id)} style={{ width: "32px", height: "32px" }} />
+                        <img src="/trash.png" alt="trash" onClick={() => eliminar(item.id)} style={{ width: "32px", height: "32px" }} />
                       </td>
                     </tr>
                   ))
