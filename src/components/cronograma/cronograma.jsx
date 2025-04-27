@@ -92,7 +92,7 @@ function FinanzasTable() {
         <h1>Tu cronograma de ingresos y egresos</h1>
         <div className="opciones_gen">
           <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar" />
-          <img src="/generar_informe.png" alt="add" onClick={() => {}} className="generar" />
+          <img src="/generar_informe.png" alt="generate" onClick={() => {}} className="generar" />
         </div>
         <table border="1">
           <thead>
