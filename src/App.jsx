@@ -5,6 +5,7 @@ import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import { BrowserRouter, Routes, Route, data } from 'react-router-dom';
 import Cronograma from './components/cronograma/cronograma';
+import Reportes from './components/cronograma/Reporte/reportes';
 
 
 
@@ -15,6 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/cronograma" element={<Cronograma />} />
+          <Route path="/reportes" element={<Reportes />} />
         </Routes>
       </BrowserRouter>
     </>

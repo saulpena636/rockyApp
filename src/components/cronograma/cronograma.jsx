@@ -3,21 +3,41 @@ import "./cronograma.css"
 import { useEffect, useState } from 'react';
 import { agregar, mostrarUno, actualizarUno, eliminarUno, obtenerTodos } from "../../services/cronograma";
 
-function FinanzasTable() {
+function Cronograma() {
   const [datos, setDatos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarModalA, setMostrarModalA] = useState(false);
   const [mostrarModalD, setMostrarModalD] = useState(false);
+  const [mostrarModalR, setMostrarModalR] = useState(false);
 
   const usuario_id = 0
   const navigate = useNavigate();
   const [id, setId] = useState(0);
   const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
+  const [fechaF, setFechaF] = useState(new Date().toISOString().split('T')[0]);
   const [tipo, setTipo] = useState("ingreso");
   const [concepto, setConcepto] = useState("");
   const [monto_presupuestado, setMonto_presupuestado] = useState(0);
   const [monto_real, setMonto_real] = useState(0);
+
+  const ahora = new Date();
+  const hora = ahora.getHours();
+
+  let mensaje = ''
+  if (hora >= 18 || hora < 6) {
+    mensaje = 'Buena noche, '
+  }
+  else if (hora >= 12) {
+    mensaje = 'Buena tarde, '
+  }
+  else {
+    mensaje = 'Buen dia, '
+  }
+
+  if (localStorage.getItem('user') === null) {
+    navigate("/")
+  }
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -84,15 +104,22 @@ function FinanzasTable() {
     }
   }
 
+  const irAFinanzas = (e) => {
+    e.preventDefault();
+    navigate('/reportes', { state: { fechaInicio: fecha, fechaFinal: fechaF } });
+  };
+
+
   return (
     <div className="contenedor">
       <div className="nav"></div>
       <div style={{ width: "100%", height: "80px" }}></div>
       <div className="contenedorTabla">
+        <h1>{mensaje}{localStorage.getItem('user')}</h1>
         <h1>Tu cronograma de ingresos y egresos</h1>
         <div className="opciones_gen">
           <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar" />
-          <img src="/generar_informe.png" alt="generate" onClick={() => {}} className="generar" />
+          <img src="/generar_informe.png" alt="generate" onClick={() => setMostrarModalR(true)} className="generar" />
         </div>
         <table border="1">
           <thead>
@@ -249,6 +276,38 @@ function FinanzasTable() {
           </div>
         )}
 
+        {mostrarModalR && (
+          <div className="modal">
+            <div className="modal-contenido">
+              <h2>Reporte de finenzas</h2>
+              <form onSubmit={irAFinanzas}>
+                <div className="md3-input">
+                  <input
+                    type="date"
+                    value={fecha}
+                    onChange={(e) => setFecha(e.target.value)}
+                    required
+                    className={fecha ? 'filled' : ''}
+                  />
+                  <label className={fecha ? 'active' : ''}>Fecha de inicio</label>
+                </div>
+                <div className="md3-input">
+                  <input
+                    type="date"
+                    value={fechaF}
+                    onChange={(e) => setFechaF(e.target.value)}
+                    required
+                    className={fechaF ? 'filled' : ''}
+                  />
+                  <label className={fechaF ? 'active' : ''}>Fecha final</label>
+                </div>
+                <button type="submit" className="login-button">Actualizar</button>
+                <button onClick={() => setMostrarModalR(false)}>Cerrar</button>
+              </form>
+            </div>
+          </div>
+        )}
+
         {mostrarModalD && (
           <div className="modal">
             <div className="modal-contenido">
@@ -265,4 +324,4 @@ function FinanzasTable() {
   );
 }
 
-export default FinanzasTable;
+export default Cronograma;

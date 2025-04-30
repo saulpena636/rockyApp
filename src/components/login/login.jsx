@@ -7,7 +7,12 @@ function Login() {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
+    if (localStorage.getItem('user') !== null) {
+        navigate("/cronograma")
+    }
+
     const handleLogin = () => {
+        localStorage.setItem('user','Usuario 1')
         navigate("/cronograma");
     }
 
