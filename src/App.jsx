@@ -6,6 +6,7 @@ import '@fontsource/inter/700.css';
 import { BrowserRouter, Routes, Route, data } from 'react-router-dom';
 import Cronograma from './components/cronograma/cronograma';
 import Reportes from './components/cronograma/Reporte/reportes';
+import Signup from './components/login/signup/signup';
 
 
 
@@ -17,6 +18,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/cronograma" element={<Cronograma />} />
           <Route path="/reportes" element={<Reportes />} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </BrowserRouter>
     </>
