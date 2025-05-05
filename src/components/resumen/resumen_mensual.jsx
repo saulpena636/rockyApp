@@ -6,6 +6,7 @@ import { obtenerTodos } from "../../services/cronograma";
 function Resumen_mensual() {
     const usuario_id = localStorage.getItem('id')
     const [datos, setDatos] = useState([]);
+    const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#7D3C98", "#34495E"];
 
     useEffect(() => {
         const cargarDatos = async () => {
@@ -31,7 +32,7 @@ function Resumen_mensual() {
         const fecha = new Date(dato.fecha);
         return fecha.getMonth() + 1 === mesActual && fecha.getFullYear() === anioActual;
     });
-    
+
 
     // 2. Agrupar por categoria_id y sumar monto_real
     const resumenPorCategoria = {};
@@ -55,6 +56,32 @@ function Resumen_mensual() {
     return (
         <>
             <Navbar />
+            <div style={{ width: "100%", height: 400 }}>
+                <h2>Distribución de movimientos por categoría</h2>
+                {dataGrafica.length > 0 ? (
+                    <ResponsiveContainer>
+                        <PieChart>
+                            <Pie
+                                data={dataGrafica}
+                                dataKey="value"
+                                nameKey="name"
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={120}
+                                label
+                            >
+                                {dataGrafica.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Pie>
+                            <Tooltip />
+                            <Legend />
+                        </PieChart>
+                    </ResponsiveContainer>
+                ) : (
+                    <p>No hay movimientos registrados para este mes.</p>
+                )}
+            </div>
         </>
     )
 }
