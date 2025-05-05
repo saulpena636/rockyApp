@@ -28,7 +28,7 @@ function Reportes() {
         if (fechaInicio && fechaFinal) {
             cargarDatos();
         }
-    }, [fechaInicio, fechaFinal]); // 👈 Aquí, dependencias correctas    
+    }, [fechaInicio, fechaFinal]); 
 
     console.log(estado, datos)
 
