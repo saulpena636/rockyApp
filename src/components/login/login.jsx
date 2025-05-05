@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import  "./loginStyle.css"
+import { login, username_get } from "../../services/user";
 
 function Login() {
-    const [email,setEmail] = useState('');
+    const [username,setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
@@ -11,9 +12,23 @@ function Login() {
         navigate("/cronograma")
     }
 
-    const handleLogin = () => {
-        localStorage.setItem('user','Usuario 1')
-        navigate("/cronograma");
+    const handleLogin = async (params) => {
+        params.preventDefault()
+        const datos = new URLSearchParams ({"username":username, "password":password}).toString();
+        const respuesta = await login(datos);
+        if ("access_token" in respuesta){
+            const usuario1 = await username_get(username)
+            localStorage.setItem('user', usuario1.username)
+            localStorage.setItem('name', usuario1.nombre)
+            navigate("/cronograma");
+        }
+        else{
+            alert("Usuario o contraseña incorrectos")
+        }
+        console.log(respuesta)
+    }
+    const handleSign = () => {
+        navigate("/signup")
     }
 
     return (
@@ -29,13 +44,13 @@ function Login() {
                         </div>
                         <div className="md3-input">
                         <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             required
-                            className={email ? 'filled' : ''}
+                            className={username ? 'filled' : ''}
                         />
-                        <label className={email ? 'active' : ''}>Correo</label>
+                        <label className={username ? 'active' : ''}>Username</label>
                         </div>
 
                         <div className="md3-input">
@@ -50,6 +65,7 @@ function Login() {
                         </div>                  
                         <button type="submit" className="login-button">Iniciar sesion</button>
                     </form>
+                    <a onClick={handleSign}>Registratre aqui!</a>
                 </div>
             </div>
         </>

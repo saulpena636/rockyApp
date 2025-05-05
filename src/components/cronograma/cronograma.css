@@ -8,12 +8,6 @@
     align-items: center;
 }
 
-.nav {
-    width: 100vw;
-    height: 4rem;
-    background: #2C3E50;
-}
-
 .opciones_gen{
   width: auto;
   height: auto;

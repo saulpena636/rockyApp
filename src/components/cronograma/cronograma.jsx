@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import "./cronograma.css"
 import { useEffect, useState } from 'react';
 import { agregar, mostrarUno, actualizarUno, eliminarUno, obtenerTodos } from "../../services/cronograma";
+import Navbar from "../../navbar";
 
 function Cronograma() {
   const [datos, setDatos] = useState([]);
@@ -112,11 +113,11 @@ function Cronograma() {
 
   return (
     <div className="contenedor">
-      <div className="nav"></div>
+      <Navbar />
       <div style={{ width: "100%", height: "80px" }}></div>
       <div className="contenedorTabla">
-        <h1>{mensaje}{localStorage.getItem('user')}</h1>
-        <h1>Tu cronograma de ingresos y egresos</h1>
+        <h1>{mensaje}{localStorage.getItem('name')}</h1>
+        {datos.length > 0 ? (<><h1>Tu cronograma de ingresos y egresos</h1>
         <div className="opciones_gen">
           <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar" />
           <img src="/generar_informe.png" alt="generate" onClick={() => setMostrarModalR(true)} className="generar" />
@@ -153,7 +154,12 @@ function Cronograma() {
               </>
             ))}
           </tbody>
-        </table>
+        </table></>) : (
+        <div className="mensaje-vacio">
+        <h2>No hay movimientos registrados aún.</h2>
+        <p>Agrega tu primer ingreso o egreso para comenzar a ver tu cronograma financiero.</p>
+      </div>)
+        }
         {mostrarModal && (
           <div className="modal">
             <div className="modal-contenido">

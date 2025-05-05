@@ -7,9 +7,9 @@
     align-items: center;
 }
 
-.loginCont{
-    width: 33.0625rem;
-    height: 33.5rem;
+.signCont {
+    width: 920px;
+    height: 34rem;
     border-radius: 1rem;
     background: #F4F6F7;
     display: flex;
@@ -18,7 +18,7 @@
     align-items: center;
 }
 
-.formLogin{
+.formLogin {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -27,7 +27,14 @@
     gap: 32px;
 }
 
-.loginTitulo{
+.formInt {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 32px;
+}
+
+.loginTitulo {
     color: #000;
     font-family: Inter;
     font-size: 2rem;
@@ -36,7 +43,7 @@
     line-height: normal;
 }
 
-.loginp{
+.loginp {
     color: #000;
     font-family: Inter;
     font-size: 1.25rem;
@@ -44,12 +51,13 @@
     font-weight: 600;
     line-height: normal;
 }
+
 .md3-input {
     position: relative;
     margin-bottom: 1.5rem;
-  }
-  
-  .md3-input input {
+}
+
+.md3-input input {
     width: 24.8125rem;
     padding: 1.25rem 0.75rem 0.5rem;
     height: 2.25rem;
@@ -62,13 +70,13 @@
     padding-top: 12px;
     border-bottom: 1px solid #000;
     transition: border-color 0.3s;
-  }
-  
-  .md3-input input:focus {
+}
+
+.md3-input input:focus {
     border-bottom: 2px solid #6200ee;
-  }
-  
-  .md3-input label {
+}
+
+.md3-input label {
     position: absolute;
     left: 0.75rem;
     top: 1.25rem;
@@ -76,17 +84,17 @@
     color: #666;
     pointer-events: none;
     transition: all 0.2s ease-out;
-  }
-  
-  .md3-input input:focus + label,
-  .md3-input input:valid + label {
+}
+
+.md3-input input:focus+label,
+.md3-input input:valid+label {
     top: 0.5rem;
     font-size: 0.75rem;
     color: #6200ee;
-  }
-  
+}
 
-.login-button{
+
+.login-button {
     display: inline-flex;
     height: 2.5rem;
     flex-direction: column;

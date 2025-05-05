@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { estadoFinanciero, progresoFinanciero } from "../../../services/cronograma";
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import Navbar from "../../../navbar";
 
 function Reportes() {
     const location = useLocation();
@@ -52,10 +53,10 @@ function Reportes() {
 
     return (
         <div className="contenedor">
-            <div className="nav"></div>
+            <Navbar />
             <div style={{ width: "100%", height: "80px" }}></div>
             <div className="contenedorTabla">
-                <h1>{localStorage.getItem('user')}, Este es tu reporte financiero de {fechaInicio} a {fechaFinal}</h1>
+                <h1>{localStorage.getItem('name')}, Este es tu reporte financiero de {fechaInicio} a {fechaFinal}</h1>
                 <h2>Tu estado de reporte: {estado.mensaje}</h2>
                 <h2 style={{margin:"0"}}>Del {fechaInicio} al {fechaFinal}, tus ingresos han sido de ${estado.total_ingresos}</h2>
                 <h2 style={{margin:"0"}}>Del {fechaInicio} al {fechaFinal}, tus egresos han sido de ${estado.total_egresos}</h2>
