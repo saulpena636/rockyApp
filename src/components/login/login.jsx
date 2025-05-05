@@ -20,6 +20,7 @@ function Login() {
             const usuario1 = await username_get(username)
             localStorage.setItem('user', usuario1.username)
             localStorage.setItem('name', usuario1.nombre)
+            localStorage.setItem('id',usuario1.id)
             navigate("/cronograma");
         }
         else{
