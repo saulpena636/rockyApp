@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, data } from 'react-router-dom';
 import Cronograma from './components/cronograma/cronograma';
 import Reportes from './components/cronograma/Reporte/reportes';
 import Signup from './components/login/signup/signup';
+import Resumen_mensual from './components/resumen/resumen_mensual';
 
 
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/cronograma" element={<Cronograma />} />
           <Route path="/reportes" element={<Reportes />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/resumen_mensual" element={<Resumen_mensual />} />
         </Routes>
       </BrowserRouter>
     </>

@@ -1,8 +1,8 @@
 const BASE_URL = "http://localhost:8000";
 
-export const obtenerTodos = async () => {
+export const obtenerTodos = async (id) => {
     try {
-        const respuesta = await fetch(BASE_URL + '/movimientoFinanciero');
+        const respuesta = await fetch(`${BASE_URL}/movimientoFinanciero/list/${id}`);
         return await respuesta.json();
     } catch (error) {
         console.error("Error al cargar los movimientos:", error);

@@ -12,7 +12,7 @@ function Cronograma() {
   const [mostrarModalD, setMostrarModalD] = useState(false);
   const [mostrarModalR, setMostrarModalR] = useState(false);
 
-  const usuario_id = 0
+  const usuario_id = localStorage.getItem('id')
   const navigate = useNavigate();
   const [id, setId] = useState(0);
   const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
@@ -42,13 +42,9 @@ function Cronograma() {
 
   useEffect(() => {
     const cargarDatos = async () => {
-      try {
-        const data = await obtenerTodos();
+        const data = await obtenerTodos(usuario_id);
         setDatos(data);
         setLoading(false);
-      } catch (error) {
-        setLoading(false);
-      }
     };
 
     cargarDatos();
@@ -158,6 +154,7 @@ function Cronograma() {
         <div className="mensaje-vacio">
         <h2>No hay movimientos registrados aún.</h2>
         <p>Agrega tu primer ingreso o egreso para comenzar a ver tu cronograma financiero.</p>
+        <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar" />
       </div>)
         }
         {mostrarModal && (
