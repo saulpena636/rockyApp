@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import Navbar from "../../navbar";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { obtenerTodos } from "../../services/cronograma";
+import { getCategorias } from "../../services/categoria";
 
 function Resumen_mensual() {
     const usuario_id = localStorage.getItem('id')
     const [datos, setDatos] = useState([]);
+    const [categorias, setCategorias] = useState([]);
     const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#7D3C98", "#34495E"];
 
     useEffect(() => {
@@ -15,13 +17,15 @@ function Resumen_mensual() {
                 const data = await obtenerTodos(usuario_id);
                 setDatos(data); // Aquí sí guardamos los datos correctamente
                 console.log(data)
+                const data2 = await getCategorias();
+                setCategorias(data2)
+                console.log(data2)
             } catch (error) {
                 console.error("Error al cargar los movimientos:", error);
             }
         };
         cargarDatos();
     }, []);
-
 
     const mesActual = 4
     console.log(mesActual)
@@ -34,16 +38,24 @@ function Resumen_mensual() {
     });
 
 
-    // 2. Agrupar por categoria_id y sumar monto_real
-    const resumenPorCategoria = {};
 
-    datosFiltrados.forEach(dato => {
-        const categoria = `Categoría ${dato.categoria_id}`;
-        if (!resumenPorCategoria[categoria]) {
-            resumenPorCategoria[categoria] = 0;
-        }
-        resumenPorCategoria[categoria] += dato.monto_real;
-    });
+    // Crear un diccionario de id => nombre
+const mapaCategorias = {};
+categorias.forEach(cat => {
+  mapaCategorias[cat.id] = cat.categoria;
+});
+
+// Agrupar por nombre de categoría
+const resumenPorCategoria = {};
+
+datosFiltrados.forEach(dato => {
+  const nombreCategoria = mapaCategorias[dato.categoria_id] || "Sin categoría";
+  if (!resumenPorCategoria[nombreCategoria]) {
+    resumenPorCategoria[nombreCategoria] = 0;
+  }
+  resumenPorCategoria[nombreCategoria] += dato.monto_real;
+});
+
 
     // 3. Convertir a array para usar en gráfica
     const dataGrafica = Object.entries(resumenPorCategoria).map(([name, value]) => ({
