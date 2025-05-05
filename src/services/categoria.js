@@ -1,6 +1,6 @@
 const BASE_URL = "http://localhost:8000";
 
-export const gerCategorias = async (id) => {
+export const getCategorias = async (id) => {
     try {
         const respuesta = await fetch(`${BASE_URL}/categoria`);
         return await respuesta.json();

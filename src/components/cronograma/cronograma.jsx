@@ -1,3 +1,4 @@
+// ...importaciones
 import { useNavigate } from "react-router-dom";
 import "./cronograma.css"
 import { useEffect, useState } from 'react';
@@ -12,7 +13,7 @@ function Cronograma() {
   const [mostrarModalD, setMostrarModalD] = useState(false);
   const [mostrarModalR, setMostrarModalR] = useState(false);
 
-  const usuario_id = localStorage.getItem('id')
+  const usuario_id = localStorage.getItem('id');
   const navigate = useNavigate();
   const [id, setId] = useState(0);
   const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
@@ -21,36 +22,33 @@ function Cronograma() {
   const [concepto, setConcepto] = useState("");
   const [monto_presupuestado, setMonto_presupuestado] = useState(0);
   const [monto_real, setMonto_real] = useState(0);
+  const [categoria_id, setCategoriaId] = useState("");
+  const [categorias, setCategorias] = useState([]);
 
   const ahora = new Date();
   const hora = ahora.getHours();
+  let mensaje = '';
+  if (hora >= 18 || hora < 6) mensaje = 'Buena noche, ';
+  else if (hora >= 12) mensaje = 'Buena tarde, ';
+  else mensaje = 'Buen día, ';
 
-  let mensaje = ''
-  if (hora >= 18 || hora < 6) {
-    mensaje = 'Buena noche, '
-  }
-  else if (hora >= 12) {
-    mensaje = 'Buena tarde, '
-  }
-  else {
-    mensaje = 'Buen dia, '
-  }
+  if (!localStorage.getItem('user')) navigate("/");
 
-  if (localStorage.getItem('user') === null) {
-    navigate("/")
-  }
+  useEffect(() => {
+    fetch("http://localhost:8000/categoria")
+      .then((res) => res.json())
+      .then((data) => setCategorias(data))
+      .catch((err) => console.error("Error al cargar categorías:", err));
+  }, []);
 
   useEffect(() => {
     const cargarDatos = async () => {
-        const data = await obtenerTodos(usuario_id);
-        setDatos(data);
-        setLoading(false);
+      const data = await obtenerTodos(usuario_id);
+      setDatos(data);
+      setLoading(false);
     };
-
     cargarDatos();
   }, []);
-
-  console.log(datos);
 
   const agrupado = datos.reduce((acc, item) => {
     acc[item.fecha] = acc[item.fecha] || { ingreso: [], egreso: [] };
@@ -58,54 +56,42 @@ function Cronograma() {
     return acc;
   }, {});
 
-  console.log(agrupado);
-
-  /* Agregar nuevo */
-  const agregarN = async (params) => {
-    params.preventDefault();
-    const datos = { usuario_id, fecha, tipo, concepto, monto_presupuestado, monto_real };
-    const respuesta = await agregar(datos);
-    console.log(respuesta);
+  const agregarN = async (e) => {
+    e.preventDefault();
+    const nuevo = { usuario_id, fecha, tipo, concepto, monto_presupuestado, monto_real, categoria_id };
+    await agregar(nuevo);
     window.location.reload();
+  };
 
-  }
-
-  /* Mostrar Uno */
   const mostrarUNo = async (id) => {
     const datos = await mostrarUno(id);
-    const { usuario_id, fecha, tipo, concepto, monto_presupuestado, monto_real } = datos;
-    setId(id);
-    setFecha(fecha);
-    setTipo(tipo);
-    setConcepto(concepto);
-    setMonto_presupuestado(monto_presupuestado);
-    setMonto_real(monto_real);
+    if (!datos) return;
+    setId(datos.id);
+    setFecha(datos.fecha);
+    setTipo(datos.tipo);
+    setConcepto(datos.concepto);
+    setMonto_presupuestado(datos.monto_presupuestado);
+    setMonto_real(datos.monto_real);
+    setCategoriaId(datos.categoria_id || "");
     setMostrarModalA(true);
-  }
+  };
 
-  /* Actualizar */
-  const actualizar = async (params) => {
-    params.preventDefault();
-    const datos = { usuario_id, fecha, tipo, concepto, monto_presupuestado, monto_real };
-    const respuesta = await actualizarUno(id, datos);
-    console.log(respuesta);
+  const actualizar = async (e) => {
+    e.preventDefault();
+    const actualizado = { usuario_id, fecha, tipo, concepto, monto_presupuestado, monto_real, categoria_id };
+    await actualizarUno(id, actualizado);
     window.location.reload();
+  };
 
-  }
-
-  /* Eliminar */
   const eliminar = async (id) => {
     const ok = await eliminarUno(id);
-    if (ok) {
-      window.location.reload();
-    }
-  }
+    if (ok) window.location.reload();
+  };
 
   const irAFinanzas = (e) => {
     e.preventDefault();
     navigate('/reportes', { state: { fechaInicio: fecha, fechaFinal: fechaF } });
   };
-
 
   return (
     <div className="contenedor">
@@ -113,164 +99,141 @@ function Cronograma() {
       <div style={{ width: "100%", height: "80px" }}></div>
       <div className="contenedorTabla">
         <h1>{mensaje}{localStorage.getItem('name')}</h1>
-        {datos.length > 0 ? (<><h1>Tu cronograma de ingresos y egresos</h1>
-        <div className="opciones_gen">
-          <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar" />
-          <img src="/generar_informe.png" alt="generate" onClick={() => setMostrarModalR(true)} className="generar" />
-        </div>
-        <table border="1">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Tipo</th>
-              <th>Concepto</th>
-              <th>Monto presupuestado</th>
-              <th>Monto real</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(agrupado).map(([fecha, tipos]) => (
-              <>
-                {["ingreso", "egreso"].map((tipo) =>
-                  tipos[tipo].map((item, index) => (
-                    <tr key={`${fecha}-${tipo}-${index}`}>
-                      <td>{index === 0 ? fecha : ""}</td> {/* Solo muestra la fecha una vez */}
-                      <td>{tipo}</td>
-                      <td>{item.concepto}</td>
-                      <td>{item.monto_presupuestado}</td>
-                      <td>{item.monto_real}</td>
-                      <td>
-                        <img src="/edit.png" alt="edit" onClick={() => mostrarUNo(item.id)} style={{ width: "32px", height: "32px" }} />
-                        <img src="/trash.png" alt="trash" onClick={() => eliminar(item.id)} style={{ width: "32px", height: "32px" }} />
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </>
-            ))}
-          </tbody>
-        </table></>) : (
-        <div className="mensaje-vacio">
-        <h2>No hay movimientos registrados aún.</h2>
-        <p>Agrega tu primer ingreso o egreso para comenzar a ver tu cronograma financiero.</p>
-        <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar" />
-      </div>)
-        }
+        {datos.length > 0 ? (
+          <>
+            <h1>Tu cronograma de ingresos y egresos</h1>
+            <div className="opciones_gen">
+              <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar" />
+              <img src="/generar_informe.png" alt="generate" onClick={() => setMostrarModalR(true)} className="generar" />
+            </div>
+            <table border="1">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Concepto</th>
+                  <th>Monto presupuestado</th>
+                  <th>Monto real</th>
+                  <th>Categoría</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(agrupado).map(([fecha, tipos]) => (
+                  <>
+                    {["ingreso", "egreso"].map((tipo) =>
+                      tipos[tipo].map((item, index) => (
+                        <tr key={`${fecha}-${tipo}-${index}`}>
+                          <td>{index === 0 ? fecha : ""}</td>
+                          <td>{tipo}</td>
+                          <td>{item.concepto}</td>
+                          <td>{item.monto_presupuestado}</td>
+                          <td>{item.monto_real}</td>
+                          <td>{categorias.find(c => c.id === item.categoria_id)?.categoria || "Sin categoría"}</td>
+                          <td>
+                            <img src="/edit.png" alt="edit" onClick={() => mostrarUNo(item.id)} style={{ width: "32px", height: "32px" }} />
+                            <img src="/trash.png" alt="trash" onClick={() => eliminar(item.id)} style={{ width: "32px", height: "32px" }} />
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </>
+                ))}
+              </tbody>
+            </table>
+          </>
+        ) : (
+          <div className="mensaje-vacio">
+            <h2>No hay movimientos registrados aún.</h2>
+            <p>Agrega tu primer ingreso o egreso para comenzar a ver tu cronograma financiero.</p>
+            <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar" />
+          </div>
+        )}
+
+        {/* Modal Agregar */}
         {mostrarModal && (
           <div className="modal">
             <div className="modal-contenido">
               <h2>Formulario de Agregar</h2>
               <form onSubmit={agregarN}>
+                {/* Campos */}
                 <div className="md3-input">
-                  <input
-                    type="date"
-                    value={fecha}
-                    onChange={(e) => setFecha(e.target.value)}
-                    required
-                    className={fecha ? 'filled' : ''}
-                  />
-                  <label className={fecha ? 'active' : ''}>Fecha</label>
+                  <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required />
+                  <label>Fecha</label>
                 </div>
                 <div className="md3-input">
-                  <label className={tipo ? 'filled' : ''}>Elige una opción:</label>
-                  <select value={tipo} onChange={(e) => setTipo(e.target.value)} className={tipo ? 'filled' : ''}>
+                  <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
                     <option value="ingreso">Ingreso</option>
                     <option value="egreso">Egreso</option>
                   </select>
+                  <label>Tipo</label>
                 </div>
                 <div className="md3-input">
-                  <input
-                    type="text"
-                    value={concepto}
-                    onChange={(e) => setConcepto(e.target.value)}
-                    required
-                    className={concepto ? 'filled' : ''}
-                  />
-                  <label className={concepto ? 'active' : ''}>Concepto</label>
+                  <input type="text" value={concepto} onChange={(e) => setConcepto(e.target.value)} required />
+                  <label>Concepto</label>
                 </div>
                 <div className="md3-input">
-                  <input
-                    type="number"
-                    value={monto_presupuestado}
-                    onChange={(e) => setMonto_presupuestado(e.target.value)}
-                    step="0.01"
-                    required
-                    className={monto_presupuestado ? 'filled' : ''}
-                  />
-                  <label className={monto_presupuestado ? 'active' : ''}>Monto presupuestado</label>
+                  <input type="number" value={monto_presupuestado} onChange={(e) => setMonto_presupuestado(e.target.value)} step="0.01" required />
+                  <label>Monto presupuestado</label>
                 </div>
                 <div className="md3-input">
-                  <input
-                    type="number"
-                    value={monto_real}
-                    onChange={(e) => setMonto_real(e.target.value)}
-                    step="0.01"
-                    required
-                    className={monto_real ? 'filled' : ''}
-                  />
-                  <label className={monto_real ? 'active' : ''}>Monto real</label>
+                  <input type="number" value={monto_real} onChange={(e) => setMonto_real(e.target.value)} step="0.01" required />
+                  <label>Monto real</label>
                 </div>
-                <button type="submit" className="login-button">Enviar</button>
+                <div className="md3-input">
+                  <label>Categoría</label>
+                  <select value={categoria_id} onChange={(e) => setCategoriaId(parseInt(e.target.value))}>
+                    <option value="">Seleccione una categoría</option>
+                    {categorias.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.categoria}</option>
+                    ))}
+                  </select>
+                </div>
+                <button type="submit" className="login-button">Guardar</button>
                 <button onClick={() => setMostrarModal(false)}>Cerrar</button>
               </form>
             </div>
           </div>
         )}
 
+        {/* Modal Actualizar */}
         {mostrarModalA && (
           <div className="modal">
             <div className="modal-contenido">
-              <h2>Formulario de Agregar</h2>
+              <h2>Formulario de Actualizar</h2>
               <form onSubmit={actualizar}>
+                {/* Mismos campos que el anterior */}
                 <div className="md3-input">
-                  <input
-                    type="date"
-                    value={fecha}
-                    onChange={(e) => setFecha(e.target.value)}
-                    required
-                    className={fecha ? 'filled' : ''}
-                  />
-                  <label className={fecha ? 'active' : ''}>Fecha</label>
+                  <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required />
+                  <label>Fecha</label>
                 </div>
                 <div className="md3-input">
-                  <label className={tipo ? 'filled' : ''}>Elige una opción:</label>
-                  <select value={tipo} onChange={(e) => setTipo(e.target.value)} className={tipo ? 'filled' : ''}>
+                  <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
                     <option value="ingreso">Ingreso</option>
                     <option value="egreso">Egreso</option>
                   </select>
+                  <label>Tipo</label>
                 </div>
                 <div className="md3-input">
-                  <input
-                    type="text"
-                    value={concepto}
-                    onChange={(e) => setConcepto(e.target.value)}
-                    required
-                    className={concepto ? 'filled' : ''}
-                  />
-                  <label className={concepto ? 'active' : ''}>Concepto</label>
+                  <input type="text" value={concepto} onChange={(e) => setConcepto(e.target.value)} required />
+                  <label>Concepto</label>
                 </div>
                 <div className="md3-input">
-                  <input
-                    type="number"
-                    value={monto_presupuestado}
-                    onChange={(e) => setMonto_presupuestado(e.target.value)}
-                    step="0.01"
-                    required
-                    className={monto_presupuestado ? 'filled' : ''}
-                  />
-                  <label className={monto_presupuestado ? 'active' : ''}>Monto presupuestado</label>
+                  <input type="number" value={monto_presupuestado} onChange={(e) => setMonto_presupuestado(e.target.value)} step="0.01" required />
+                  <label>Monto presupuestado</label>
                 </div>
                 <div className="md3-input">
-                  <input
-                    type="number"
-                    value={monto_real}
-                    onChange={(e) => setMonto_real(e.target.value)}
-                    step="0.01"
-                    required
-                    className={monto_real ? 'filled' : ''}
-                  />
-                  <label className={monto_real ? 'active' : ''}>Monto real</label>
+                  <input type="number" value={monto_real} onChange={(e) => setMonto_real(e.target.value)} step="0.01" required />
+                  <label>Monto real</label>
+                </div>
+                <div className="md3-input">
+                  <label>Categoría</label>
+                  <select value={categoria_id} onChange={(e) => setCategoriaId(parseInt(e.target.value))}>
+                    <option value="">Seleccione una categoría</option>
+                    {categorias.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.categoria}</option>
+                    ))}
+                  </select>
                 </div>
                 <button type="submit" className="login-button">Actualizar</button>
                 <button onClick={() => setMostrarModalA(false)}>Cerrar</button>
@@ -278,49 +241,6 @@ function Cronograma() {
             </div>
           </div>
         )}
-
-        {mostrarModalR && (
-          <div className="modal">
-            <div className="modal-contenido">
-              <h2>Reporte de finenzas</h2>
-              <form onSubmit={irAFinanzas}>
-                <div className="md3-input">
-                  <input
-                    type="date"
-                    value={fecha}
-                    onChange={(e) => setFecha(e.target.value)}
-                    required
-                    className={fecha ? 'filled' : ''}
-                  />
-                  <label className={fecha ? 'active' : ''}>Fecha de inicio</label>
-                </div>
-                <div className="md3-input">
-                  <input
-                    type="date"
-                    value={fechaF}
-                    onChange={(e) => setFechaF(e.target.value)}
-                    required
-                    className={fechaF ? 'filled' : ''}
-                  />
-                  <label className={fechaF ? 'active' : ''}>Fecha final</label>
-                </div>
-                <button type="submit" className="login-button">Actualizar</button>
-                <button onClick={() => setMostrarModalR(false)}>Cerrar</button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {mostrarModalD && (
-          <div className="modal">
-            <div className="modal-contenido">
-              <h2>Eliminar</h2>
-              <p>Estas seguro de eliminar el elemento?</p>
-              <button onClick={() => setMostrarModalD(false)}>Cerrar</button>
-            </div>
-          </div>
-        )}
-
 
       </div>
     </div>
