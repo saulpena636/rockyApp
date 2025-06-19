@@ -2,7 +2,13 @@ const BASE_URL = "http://localhost:8000";
 
 export const obtenerTodos = async (id) => {
     try {
-        const respuesta = await fetch(`${BASE_URL}/movimientoFinanciero/list/${id}`);
+        const respuesta = await fetch(`${BASE_URL}/movimientoFinanciero/list/${id}`, {
+            method: "GET",
+            credentials: "include", // 👈 Si estás usando cookies o tokens con credenciales
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
         return await respuesta.json();
     } catch (error) {
         console.error("Error al cargar los movimientos:", error);
@@ -28,7 +34,13 @@ export const agregar = async (datos) => {
 
 export const mostrarUno = async (id) => {
     try {
-        const respuesta = await fetch(`${BASE_URL}/movimientoFinanciero/${id}`);
+        const respuesta = await fetch(`${BASE_URL}/movimientoFinanciero/${id}`, {
+  method: "GET",
+  credentials: "include", // 👈 Si estás usando cookies o tokens con credenciales
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
         return await respuesta.json();
     } catch (error) {
         console.error("Error al obtener movimiento:", error);

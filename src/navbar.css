@@ -1,9 +1,9 @@
 .nav {
     width: 100vw;
     height: 4rem;
-    background: #2C3E50;
+    background: #1D2D50;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-around;
     align-items: center;
 }
 

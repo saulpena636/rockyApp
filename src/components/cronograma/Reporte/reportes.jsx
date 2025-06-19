@@ -29,7 +29,7 @@ function Reportes() {
         if (fechaInicio && fechaFinal) {
             cargarDatos();
         }
-    }, [fechaInicio, fechaFinal]); 
+    }, [fechaInicio, fechaFinal]);
 
     console.log(estado, datos)
 
@@ -58,24 +58,36 @@ function Reportes() {
             <div className="contenedorTabla">
                 <h1>{localStorage.getItem('name')}, Este es tu reporte financiero de {fechaInicio} a {fechaFinal}</h1>
                 <h2>Tu estado de reporte: {estado.mensaje}</h2>
-                <h2 style={{margin:"0"}}>Del {fechaInicio} al {fechaFinal}, tus ingresos han sido de ${estado.total_ingresos}</h2>
-                <h2 style={{margin:"0"}}>Del {fechaInicio} al {fechaFinal}, tus egresos han sido de ${estado.total_egresos}</h2>
-                <h2 style={{margin:"0"}}>Del {fechaInicio} al {fechaFinal}, tu total es de  ${estado.saldo_final}</h2>
+                <h2 style={{ margin: "0" }}>Del {fechaInicio} al {fechaFinal}, tus ingresos han sido de ${estado.total_ingresos}</h2>
+                <h2 style={{ margin: "0" }}>Del {fechaInicio} al {fechaFinal}, tus egresos han sido de ${estado.total_egresos}</h2>
+                <h2 style={{ margin: "0" }}>Del {fechaInicio} al {fechaFinal}, tu total es de  ${estado.saldo_final}</h2>
                 <div style={{ width: '100%', height: 480 }}>
-                <ResponsiveContainer>
-                    <LineChart
-                        data={progresoArray}
-                        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="fecha" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Line type="linear" dataKey="saldo" stroke="#8884d8" strokeWidth={5} />
-                    </LineChart>
-                </ResponsiveContainer>
-            </div>
+                    <ResponsiveContainer>
+                        <LineChart
+                            data={progresoArray}
+                            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="fecha" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Line
+                                
+                                dataKey="saldo"
+                                strokeWidth={5}
+                                segment={(points, index) => {
+                                    const startSaldo = progresoArray[index]?.saldo;
+                                    const endSaldo = progresoArray[index + 1]?.saldo;
+
+                                    return {
+                                        stroke: startSaldo < endSaldo ? 'red' : '#8884d8',
+                                    };
+                                }}
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
             </div>
 
         </div>

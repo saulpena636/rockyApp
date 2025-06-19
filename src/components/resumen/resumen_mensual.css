@@ -1,0 +1,11 @@
+.contentResumen {
+    width: 85%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.graficaContent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

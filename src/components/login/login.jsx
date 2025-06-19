@@ -64,9 +64,11 @@ function Login() {
                         />
                         <label className={password ? 'active' : ''}>Contraseña</label>
                         </div>                  
-                        <button type="submit" className="login-button">Iniciar sesion</button>
+                        <div>
+                            <button type="submit" className="login-button">Iniciar sesion</button>
+                            <a onClick={handleSign}>Registratre aqui!</a>
+                        </div>
                     </form>
-                    <a onClick={handleSign}>Registratre aqui!</a>
                 </div>
             </div>
         </>

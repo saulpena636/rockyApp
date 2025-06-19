@@ -106,7 +106,7 @@ function Cronograma() {
               <img src="/agregar.png" alt="add" onClick={() => setMostrarModal(true)} className="agregar" />
               <img src="/generar_informe.png" alt="generate" onClick={() => setMostrarModalR(true)} className="generar" />
             </div>
-            <table border="1">
+            <table>
               <thead>
                 <tr>
                   <th>Fecha</th>
@@ -124,8 +124,8 @@ function Cronograma() {
                     {["ingreso", "egreso"].map((tipo) =>
                       tipos[tipo].map((item, index) => (
                         <tr key={`${fecha}-${tipo}-${index}`}>
-                          <td>{index === 0 ? fecha : ""}</td>
-                          <td>{tipo}</td>
+                          <td className="fecha">{index === 0 ? fecha : ""}</td>
+                          <td style={{ background: tipo === "ingreso" ? "#ACF6C8" : "#FF8080" }}>{tipo}</td>
                           <td>{item.concepto}</td>
                           <td>{item.monto_presupuestado}</td>
                           <td>{item.monto_real}</td>
@@ -237,6 +237,26 @@ function Cronograma() {
                 </div>
                 <button type="submit" className="login-button">Actualizar</button>
                 <button onClick={() => setMostrarModalA(false)}>Cerrar</button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {mostrarModalR && (
+          <div className="modal">
+            <div className="modal-contenido">
+              <h2>Formulario de Actualizar</h2>
+              <form onSubmit={irAFinanzas}>
+                <div className="md3-input">
+                  <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required />
+                  <label>Fecha</label>
+                </div>
+                <div className="md3-input">
+                  <input type="date" value={fechaF} onChange={(e) => setFechaF(e.target.value)} required />
+                  <label>Fecha</label>
+                </div>
+                <button type="submit" className="login-button">Ir a finanzas</button>
+                <button onClick={() => setMostrarModalR(false)}>Cerrar</button>
               </form>
             </div>
           </div>
